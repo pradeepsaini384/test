@@ -20,7 +20,7 @@ pip install asyncio
 pip install aiohttp_wsgi
 
 
-
+important : - move index.html file into templates folder which you have to create at app.py directory
 after run the main.py file.
 if it is deploy successfully then Open web browser and write 
 http://localhost:5555
