@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+   <head>
+        <!-- <link rel="stylesheet" href="/static/index.css"> -->
+       <title>Live Transcription</title>
+   </head>
+   <body>
+        <h1 style="color: crimson;text-align: center;">Transcribe Audio </h1>
+        <p style="text-align: center;" id="status">Connection status will go here</p>
+        <button style="margin-left: 47%;" onclick="run()">click me</button>
+        <p style="border: 1px solid crimson;
+        color: black; text-align: center;" id="transcript"></p>
+
+        <script>
+            function run(){
+            navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+            if (!MediaRecorder.isTypeSupported('audio/webm'))
+                return alert('Browser not supported')
+
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'audio/webm',
+            })
+
+            const socket = new WebSocket('ws://localhost:5555/listen')
+
+            socket.onopen = () => {
+                document.querySelector('#status').textContent = 'Connected'
+                mediaRecorder.addEventListener('dataavailable', async (event) => {
+                    if (event.data.size > 0 && socket.readyState == 1) {
+                        socket.send(event.data)
+                    }
+            })
+            mediaRecorder.start(250)
+            }
+
+            socket.onmessage = (message) => {
+                const received = message.data
+                if (received) {
+                    document.querySelector('#transcript').textContent +=  ' ' + message.data
+                  
+
+                }
+
+           }
+
+           })
+        };
+
+
+        
+        </script>
+   
+   </body>
+</html>
